@@ -1,0 +1,107 @@
+<div header>
+	<div top-navigation id=header__ID class="w3-top">
+		<div class="w3-bar" id="nav__ID" style='background: rgba(255,255,255,1);opacity: 0.8;'>
+			<div class='w3-hide-medium w3-hide-large h2__ID' style='color:#000;padding:3px 0 0 20px;display: inline-block;'>Woolcock</div>
+			<div id=logo__ID class=w3-hide-small>
+				<img width=360 src='__HOST__/images/logo.jpg' style='margin-top:5px'></img>
+			</div>
+			<!-- Right-sided navbar links -->
+			<div class="w3-right w3-hide-small w3-text-black" style='padding-top:35px;padding-right:150px;'>
+				<a onclick="vm_nav_click_process('home')" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
+				<a onclick="vm_nav_click_process('about')" class="w3-bar-item w3-button"><i class="fa fa-info-circle"></i> ABOUT</a>
+				<a onclick="vm_nav_click_process('project');" class="w3-bar-item w3-button"><i class="fa fa-th"></i>PROJECT</a>
+				<a onclick="vm_nav_click_process('contact')"  class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> CONTACT</a>
+				<a name=signinout onclick="vm_nav_click_process('signinout')" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
+			</div>
+			<!-- Hide right-floated links on small screens and replace them with a menu icon -->
+			<a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+		</div>
+		<style>
+			#header__ID{
+				background: rgba(0,0,0,0.3);
+			}
+			#logo__ID{
+				padding-left:20px;
+				float:left;
+			}
+		</style>
+	</div>
+
+	<div side-navigation id="sidebar__ID" class="w3-sidebar w3-bar-block w3-black w3-card-2 w3-animate-left w3-hide-medium w3-hide-large" style="display:none">
+		<a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
+		<a onclick="vm_nav_click_process('home');w3_close()" class="w3-bar-item w3-button"><i class="fa fa-home"></i> Home</a>
+		<a onclick="vm_nav_click_process('about');w3_close()" class="w3-bar-item w3-button"><i class="fa fa-info-circle"></i> About</a>
+		<a onclick="vm_nav_click_process('project');w3_close()" class="w3-bar-item w3-button">Car Booking</a>
+		<a onclick="vm_nav_click_process('contact');w3_close()" onclick="w3_close()" class="w3-bar-item w3-button">Contact</a>
+		<a name=signinout onclick="vm_nav_click_process('signinout');w3_close()" class="w3-bar-item w3-button"></a>
+	</div>
+	<script navigation-processing>
+		//-----------------------------------------
+		var mySidebar = document.getElementById("sidebar__ID");
+		function w3_open() {
+			if (mySidebar.style.display === 'block') {
+				mySidebar.style.display = 'none';
+			} else {
+				mySidebar.style.display = 'block';
+			}
+		}
+		function w3_close() {
+			mySidebar.style.display = "none";
+		}
+		//-----------------------------------------
+		var vm_nav_click_process=function(name){
+			switch(name){
+				case 'home':
+				case 'about':
+				case 'project':
+				case 'contact':
+					load_module(name)
+					break;
+				case 'signinout':
+					if($vm.user=='guest'){
+						window.open($VmAPI.api_base+"signin.html?url="+window.location.href,"Sign In","width=600, height=600");
+					}
+					else{
+						$VmAPI.clear_token();
+						$VmAPI.request({data:{cmd:'signout'},callback:function(c){
+							$vm.user="guest";
+							$vm.user_id="";
+							location.reload(true);
+						}});
+					}
+					break;
+			}
+		}
+		//-----------------------------------------
+		var load_module=function(name){
+			if($vm.app_config.modules[name]!=undefined && $vm.app_config.modules[name].url!=undefined){
+				//this is for modules
+				var url=$vm.app_config.modules[name].url;
+				url+='?_v='+$vm.version+$vm.reload;
+				url=$vm.url(url);
+				if(url[0]=='/') url=$vm.hosting_path+url;
+				//---------------------------
+				var module="L_0_"+name;
+				if($vm.module_list[module]==undefined){
+					$vm.module_list[module]={
+						url:url,
+						var:{},
+					}
+				}
+				//---------------------------
+				$vm.load_module_by_name(module,$vm.root_layout_content_slot,{
+					name:name,
+					mobj:$vm.vm['__ID'],
+					record:{UID:0},
+					sys:{
+						config:$vm.app_config,
+						UID:0,
+					},
+					config_url:$vm.app_config.modules[name].config_url
+				})
+				$vm.config_list[name]=$vm.module_list[module].id;
+			}
+		}
+		//-----------------------------------------
+	</script>
+</div>
